@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
+// const socket = io("http://localhost:3002");
 const socket = io(process.env.NEXT_PUBLIC_LOCAL_URL);
 
 const ChatApp: React.FC = () => {
