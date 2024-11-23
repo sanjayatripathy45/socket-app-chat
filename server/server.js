@@ -60,4 +60,7 @@ io.on("connection", (socket) => {
 
 serverHttp.listen(3002, () => {
   console.log("Server listening on port 3002");
-});
+  // io.emit("server-notification", {
+  //   message: "The server is now online and ready!",
+  // });
+}); 

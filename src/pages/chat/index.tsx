@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-// const socket = io("http://localhost:3002");
+
 const socket = io(process.env.NEXT_PUBLIC_LOCAL_URL);
 
 const ChatApp: React.FC = () => {
@@ -16,6 +16,54 @@ const ChatApp: React.FC = () => {
     const [activeUsers, setActiveUsers] = useState<string[]>([]);
 
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        // Request notification permission
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted");
+                }
+            });
+        }
+
+        // Listen for received messages
+        socket.on("receive-message", ({ sender, message }) => {
+            if (sender !== username) {
+                setMessages((prev) => [...prev, { sender, message }]);
+        
+                // Trigger notification when a new message is received
+                if (Notification.permission === "granted") {
+                    new Notification("New message", {
+                        body: `${sender}: ${message}`,
+                        icon: "https://www.google.com/imgres?q=rohit&imgurl=https%3A%2F%2Fstatic.toiimg.com%2Fthumb%2Fmsid-113209976%2Cwidth-1280%2Cheight-720%2Cresizemode-4%2F113209976.jpg&imgrefurl=https%3A%2F%2Ftimesofindia.indiatimes.com%2Fsports%2Fcricket%2Fnews%2Fwho-will-be-indias-next-all-format-captain-after-rohit-sharma%2Farticleshow%2F113209968.cms&docid=EjNhY2Rtx6nRlM&tbnid=8aFo34lfM8Ui5M&vet=12ahUKEwiUt83XjvOJAxV8afUHHREMB_4QM3oECBcQAA..i&w=1280&h=720&hcb=2&ved=2ahUKEwiUt83XjvOJAxV8afUHHREMB_4QM3oECBcQAA", // Correct path to the image in the public folder
+                    });
+                }
+            }
+        });
+        
+
+        // Listen for typing indicator
+        socket.on("typing", ({ user, isTyping }) => {
+            setOtherUserTyping(isTyping);
+            setTypeUsername(user);
+        });
+
+        // Listen for active users
+        socket.on("active-users", (users) => {
+            setActiveUsers(users);
+        });
+
+        // socket.on("server-notification", (data) => {
+        //     console.log(data.message);
+        // });
+
+        return () => {
+            socket.off("receive-message");
+            socket.off("typing");
+            socket.off("active-users");
+        };
+    }, [username]);
 
     const joinRoom = () => {
         if (roomId.trim() && username.trim()) {
@@ -34,32 +82,6 @@ const ChatApp: React.FC = () => {
             socket.emit("typing", { roomId, isTyping: false });
         }
     };
-
-    useEffect(() => {
-        // Listen for received messages
-        socket.on("receive-message", ({ sender, message }) => {
-            if (sender !== username) {
-                setMessages((prev) => [...prev, { sender, message }]);
-            }
-        });
-
-        // Listen for typing indicator
-        socket.on("typing", ({ user, isTyping }) => {
-            setOtherUserTyping(isTyping);
-            setTypeUsername(user);
-        });
-
-        // Listen for active users
-        socket.on("active-users", (users) => {
-            setActiveUsers(users);
-        });
-
-        return () => {
-            socket.off("receive-message");
-            socket.off("typing");
-            socket.off("active-users");
-        };
-    }, [username]);
 
     const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCurrentMessage(e.target.value);
