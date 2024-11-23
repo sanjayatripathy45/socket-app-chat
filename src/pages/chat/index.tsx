@@ -31,7 +31,7 @@ const ChatApp: React.FC = () => {
         socket.on("receive-message", ({ sender, message }) => {
             if (sender !== username) {
                 setMessages((prev) => [...prev, { sender, message }]);
-        
+
                 // Trigger notification when a new message is received
                 if (Notification.permission === "granted") {
                     new Notification("New message", {
@@ -41,7 +41,7 @@ const ChatApp: React.FC = () => {
                 }
             }
         });
-        
+
 
         // Listen for typing indicator
         socket.on("typing", ({ user, isTyping }) => {
@@ -130,9 +130,11 @@ const ChatApp: React.FC = () => {
                     <div style={{ marginBottom: "20px" }}>
                         <h3>Active Users</h3>
                         <ul>
-                            {activeUsers.map((user, idx) => (
-                                <li key={idx}>{user}</li>
-                            ))}
+                            {activeUsers
+                                .filter((user) => user !== username) 
+                                .map((user, idx) => (
+                                    <li key={idx}>{user}</li>
+                                ))}
                         </ul>
                     </div>
 
