@@ -1,0 +1,18 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "feat_auth",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "feat_auth": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "feat_auth",
+    "origin"
+  ]
+}
