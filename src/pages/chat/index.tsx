@@ -14,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 import { RootState } from "@/redux-toolkit/store";
 import { useRouter } from "next/router";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
+import { usePathname } from "next/navigation";
 
 const socket = io(process.env.NEXT_PUBLIC_LOCAL_URL);
 
@@ -43,6 +46,8 @@ const ChatApp: React.FC = () => {
   }, []);
 
   const user = userFromRedux || userFromLocalStorage;
+
+  const pathName = usePathname()
 
   useEffect(() => {
     if (Notification.permission !== "granted") {
@@ -106,6 +111,13 @@ const ChatApp: React.FC = () => {
   };
 
   return (
+    <Box>
+      {pathName === "/chat" && 
+
+      <Header />
+      } 
+
+
     <Box sx={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
       {!joinedRoom ? (
         <Box>
@@ -180,7 +192,7 @@ const ChatApp: React.FC = () => {
                   }}
                 >
                   <Typography variant="body2" fontWeight="bold">
-                    {msg.sender}
+                    {msg.sender === user?.displayName ? "You": user.displayName}
                   </Typography>
                   <Typography variant="body2">{msg.message}</Typography>
                 </Box>
@@ -207,6 +219,8 @@ const ChatApp: React.FC = () => {
           </Button>
         </Box>
       )}
+    </Box>
+    <Footer/>
     </Box>
   );
 };

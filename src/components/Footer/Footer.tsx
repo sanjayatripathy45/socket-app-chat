@@ -12,6 +12,11 @@ const Footer = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: "100%",
       }}
     >
       {/* Copyright Text */}
