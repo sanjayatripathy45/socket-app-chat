@@ -19,7 +19,7 @@ io.on("connection", (socket) => {
   // Handle user joining a room
   socket.on("join-room", ({ roomId, username }) => {
     socket.join(roomId);
-    users[socket.id] = { roomId, username }; // Track user by socket ID
+    users[socket.id] = { roomId, username }; 
     console.log(`${username} joined room: ${roomId}`);
 
     // Broadcast the updated list of active users
@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
 
     console.log(`${socket.id} disconnected`);
     if (roomId) {
-      broadcastActiveUsers(roomId); // Update active users in the room
+      broadcastActiveUsers(roomId); 
     }
   });
 

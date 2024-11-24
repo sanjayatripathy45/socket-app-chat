@@ -7,11 +7,16 @@ import ChatApp from "./chat";
 import { AppBar, Avatar, Box, Button, Toolbar, Typography } from "@mui/material";
 import {auth} from "@/config/firebase";
 import { signOut } from "firebase/auth";
-import Header from "@/components/Header/Header";
 
 const ChatApps = () => {
 
-
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      console.log("User signed out!");
+    }).catch((error) => {
+      console.error("Error signing out:", error);
+    });
+  };
     // const [roomId, setRoomId] = useState("");
     // const [username, setUsername] = useState("");
     // const socket = useSocket(process.env.NEXT_PUBLIC_LOCAL_URL!);
@@ -20,7 +25,20 @@ const ChatApps = () => {
 
     return (
         <div>
-    <Header />
+                 <AppBar position="sticky" sx={{ backgroundColor: "#000", padding: "10px" }}>
+                <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="h6">Chat</Typography>
+                    
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                        {/* Avatar */}
+                        <Avatar sx={{ marginRight: "10px" }} />
+                        {/* Logout Button */}
+                        <Button variant="outlined" sx={{ color: "#fff" }} onClick={() => console.log('Logout')}>
+                            Logout
+                        </Button>
+                    </Box>
+                </Toolbar>
+            </AppBar>
             {/* {roomId && username ? (
                 <ChatRoom
                     roomId={roomId}
