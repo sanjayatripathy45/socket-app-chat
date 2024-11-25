@@ -1,20 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Box, Typography, AppBar, Toolbar } from '@mui/material';
 import { auth, googleProvider } from "@/config/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { useRouter } from 'next/router';
-import { FcGoogle } from 'react-icons/fc'; 
+import { FcGoogle } from 'react-icons/fc';
 import { useDispatch } from 'react-redux';
 import { login } from '@/redux-toolkit/slices/authSlice';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { saveToLocalStorage } from '@/lib/StoreLocalData';
 
 const Login = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-
+    const [formData, setFromData] = useState<any>()
     useAuthCheck();
     const { register, reset, handleSubmit, formState: { errors } } = useForm();
+
 
     useEffect(() => {
         reset({
@@ -22,27 +24,58 @@ const Login = () => {
             password: "sanjaya",
         });
     }, [reset]);
+    const onSubmit = async (data: any) => {
+        setFromData(data)   
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+            const user = userCredential.user;
+    
+            const userData = {
+                email: user.email!,
+                uid: user.uid,
+                displayName: user.displayName || user.email?.split('@')[0] || 'Unknown user',
+            };
+    
+            dispatch(login(userData));
+            saveToLocalStorage("Login-data", userData);
+    
+            router.push('/');
+            console.log("User logged in successfully");
+        } catch (error: any) {
+            // Handle errors
+            if (error.code === 'auth/user-not-found') {
+                console.error("No user found with this email.");
+                alert("No user found. Please sign up.");
+            } else if (error.code === 'auth/wrong-password') {
+                console.error("Incorrect password entered.");
+                alert("Incorrect password. Please try again.");
+            } else {
+                console.error("Login error:", error.message);
+                alert("Error logging in. Please try again.");
+            }
+        }
+    };
+    
 
-
- 
-    const onSubmit = (data: any) => {
-        createUserWithEmailAndPassword(auth, data.email, data.password)
+    const handleEmailLogin = () => {
+        createUserWithEmailAndPassword(auth, formData?.email, formData?.password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 const userData = {
                     email: user.email!,
                     uid: user.uid,
-                    displayName: user.email?.split('@')[0] || 'Unknown user', 
+                    displayName: user.email?.split('@')[0] || 'Unknown user',
                 };
                 dispatch(login(userData));
-                localStorage.setItem("Login-data", JSON.stringify(userData));
+                saveToLocalStorage("Login-data", userData);
 
-                router.push('/'); 
+                router.push('/');
             })
             .catch((error) => {
                 console.error("Error signing up:", error);
             });
-    };
+
+    }
 
     const handleGoogleLogin = async () => {
         try {
@@ -57,7 +90,7 @@ const Login = () => {
             };
             dispatch(login(userData));
 
-            localStorage.setItem("Login-data", JSON.stringify(userData));
+            saveToLocalStorage("Login-data", userData);
 
             router.push('/');
             console.log("Welcome");
@@ -119,8 +152,11 @@ const Login = () => {
                     />
 
                     <Button type="submit" variant="contained" color="primary" sx={{ marginBottom: '8px' }}>
-                        Login with Email
+                        Login
                     </Button>
+                        {/* <Button variant="contained" color="primary" sx={{ marginBottom: '8px' }} onClick={handleEmailLogin}>
+                            Login with Email
+                        </Button> */}
 
                     <Button
                         variant="contained"

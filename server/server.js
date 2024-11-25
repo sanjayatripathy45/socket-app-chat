@@ -26,10 +26,16 @@ io.on("connection", (socket) => {
     broadcastActiveUsers(roomId);
   });
 
-  // Handle receiving and broadcasting a message with sender's name
+  // Handle receiving and broadcasting a message with sender's name and timestamp
   socket.on("send-message", ({ roomId, sender, message }) => {
-    console.log(`Message from ${sender} in room ${roomId}: ${message}`);
-    io.to(roomId).emit("receive-message", { sender, message });
+    const timestamp = new Date().toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    console.log(`Message from ${sender} in room ${roomId}: ${message} at ${timestamp}`);
+
+    io.to(roomId).emit("receive-message", { sender, message, timestamp });
   });
 
   // Handle typing indicator
@@ -60,7 +66,4 @@ io.on("connection", (socket) => {
 
 serverHttp.listen(3002, () => {
   console.log("Server listening on port 3002");
-  // io.emit("server-notification", {
-  //   message: "The server is now online and ready!",
-  // });
-}); 
+});
