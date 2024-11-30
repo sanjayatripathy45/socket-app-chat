@@ -14,7 +14,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const router = useRouter();
     
-    const userFromRedux = useSelector((state: RootState) => state.auth.user);
+    const userFromRedux = useSelector((state: RootState) => state.profile);
 
     const [userFromLocalStorage, setUserFromLocalStorage] = useState<any>(null);
 
@@ -40,7 +40,7 @@ const Header = () => {
             });
     };
 
-    console.log(user?.email, user?.photoURL, "Success");
+    console.log(userFromRedux?.name, "Success");
 
     return (
         <AppBar position="sticky" sx={{ backgroundColor: "#000", padding: "10px" }}>
@@ -66,10 +66,12 @@ const Header = () => {
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <Avatar src={user?.photoURL || undefined} alt={user?.email || "User"} />
+                    <Link href="/profile" passHref>
+                        <Avatar src={userFromRedux?.image || undefined} alt={user?.email || "User"} />
                         <Typography variant="body2" sx={{ color: "#fff", marginTop: "4px" }}>
-                            {user?.displayName || user?.email || "Anonymous"}
+                            {userFromRedux?.name || user?.email || "Anonymous"}
                         </Typography>
+                        </Link>
                     </Box>
                     <Button variant="outlined" sx={{ color: "#fff" }} onClick={handleLogout}>
                         Logout
