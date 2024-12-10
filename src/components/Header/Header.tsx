@@ -62,6 +62,16 @@ const Header = () => {
                             Chat
                         </Typography>
                     </Link>
+                    <Link href="/trade" passHref>
+                        <Typography variant="h6" sx={{ cursor: "pointer", color: "#fff" }}>
+                            Trade
+                        </Typography>
+                    </Link>
+                    <Link href="/history" passHref>
+                        <Typography variant="h6" sx={{ cursor: "pointer", color: "#fff" }}>
+                            history
+                        </Typography>
+                    </Link>
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

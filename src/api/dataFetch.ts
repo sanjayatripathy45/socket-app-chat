@@ -1,9 +1,9 @@
 import axios from "axios";
 
 // Define a function to fetch historical candlestick data
-export const fetchHistoricalData = async (symbol: string, interval: string) => {
+const fetchHistoricalData = async (symbol: string, interval: string) => {
   const endTime = Date.now(); // Current time in milliseconds
-  const startTime = endTime - 30 * 24 * 60 * 60 * 1000; // One month ago (30 days)
+  const startTime = endTime - 365 * 24 * 60 * 60 * 1000; // One month ago (30 days)
 
   try {
     const response = await axios.get(`https://api.binance.com/api/v3/klines`, {
